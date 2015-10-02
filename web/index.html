@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"> <html>
+    <head>
+
+        <script type="text/javascript" src="resources/jquery-2.1.4.js"></script>
+
+        <script type="text/javascript">
+            function addRows(jsonObjectArray) {
+                if (!document.getElementsByTagName)
+                    return;
+                var newBody = document.createElement('tbody');
+                                
+                tabBody = document.getElementsByTagName("tbody").item(0);
+                                
+                col = document.createElement("tr");
+                
+                for (var cols in jsonObjectArray[0]) {
+
+                    cell = document.createElement("th");
+                    textnode = document.createTextNode(cols);
+                    cell.appendChild(textnode);
+                    col.appendChild(cell);
+                    newBody.appendChild(col);
+                }
+
+                for (var rows = 0; rows < jsonObjectArray.length; rows++) {
+
+                    row = document.createElement("tr");
+                    for (var key in jsonObjectArray[rows]) {
+                        if (jsonObjectArray[rows].hasOwnProperty(key)) {
+                            cell = document.createElement("td");
+                            textnode = document.createTextNode(jsonObjectArray[rows][key]);
+                            cell.appendChild(textnode);
+                            row.appendChild(cell);
+                            newBody.appendChild(row);
+                        }
+                    }
+
+                }
+                tabBody.parentNode.replaceChild(newBody, tabBody);
+
+            }
+
+            function fillTable() {
+
+                var properties = "";
+
+                var fname = "";
+                var lname = "";
+                var street = "";
+                var city = "";
+                
+                if ($("#fname").is(":checked")) {
+                    properties += "fname,";
+                }
+                if ($("#lname").is(":checked")) {
+                    properties += "lname,";
+                }
+                if ($("#street").is(":checked")) {
+                    properties += "street,";
+                }
+                if ($("#city").is(":checked")) {
+                    properties += "city";
+                }
+                
+                $.ajax({
+                    url: "api//addresses/" + $("#amount").val() + "/" + properties,
+                    type: "GET",
+                    datatype: "json"
+
+                }).done(function (dataFromServer) {
+                    addRows(dataFromServer);
+
+                }).fail(function (error) {
+                    alert('error');
+                });
+            }
+
+
+            $(document).ready(function () {
+
+
+                $("#fire").click(fillTable);
+                
+            });
+
+
+        </script>
+    </head>
+    <body>
+
+        <div>
+            <input id="amount" type="text" name="amount" placeholder="5" value="5"><br>
+            <input id="fname" type="checkbox" name="fname" value="fname" checked="true">first name<br>
+            <input id="lname" type="checkbox" name="lname" value="lname" checked="true">last name<br>
+            <input id="street" type="checkbox" name="street" value="street" checked="true">street<br>
+            <input id="city" type="checkbox" name="city" value="fname" checked="true">city<br><br>
+            <button id="fire">fill table</button>
+        </div>
+
+    <br>
+
+    <table border='1' id='mytable'>
+        <tbody>
+
+        </tbody>
+    </table>
+
+
+
+</body>
+</html>
